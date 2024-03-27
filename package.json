@@ -1,0 +1,16 @@
+{
+  "name": "mi-vaquita-api",
+  "version": "1.0.0",
+  "description": "![Mi Vaquita](https://res.cloudinary.com/dmaviub4l/image/upload/v1711547483/h4mcpdoav6plnxmjbpzx.svg)\r # Mi Vaquita",
+  "main": "./src/index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}
