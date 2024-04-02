@@ -1,16 +1,38 @@
 import groupsService from '../services/groups.service.js';
 
 export const getGroups = (req, res) => {
-  res.send(groupsService.getGroups());
+  const groups = groupsService.getGroups();
+  res.json(groups);
+};
+
+export const getGroup = (req, res) => {
+  const id = req.params.id;
+
+  const group = groupsService.getGroupById(id);
+  if (group === undefined) {
+    res.status(404).send('Group not found');
+  }
+  res.status(200).json(group);
 };
 
 export const createGroups = (req, res) => {
-  if (!req.body.name) {
-    console.log('aqui');
+  const existingGroup = groupsService.getGroup(req.body.name);
+
+  if (existingGroup) {
+    return res.status(400).json({ error: 'Group already exists' });
+  }
+
+  if (!req.body.name || req.body.name.length > 30) {
     return res
       .status(400)
-      .send({ error: 'Name is required and must be less than 30 characters' });
-  } else {
-    res.send(groupsService.createGroups(req.body.name));
+      .json({ error: 'Name is required and must be less than 30 characters' });
   }
+
+  const newGroup = groupsService.createGroups(req.body.name);
+
+  if (newGroup === null) {
+    return res.status(400).json({ error: 'Group already exists' });
+  }
+
+  res.status(201).json(newGroup);
 };
