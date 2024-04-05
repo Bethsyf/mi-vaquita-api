@@ -28,4 +28,20 @@ const createGroup = (name, color) => {
   return newGroup;
 };
 
-export default { getGroups, getGroupById, createGroup, getGroupByName };
+const deleteGroupById = (id) => {
+  const index = db.findIndex((group) => group.id === id);
+
+  if (index !== -1) {
+    db.splice(index, 1);
+    return true;
+  }
+  return false;
+};
+
+export default {
+  getGroups,
+  getGroupById,
+  createGroup,
+  getGroupByName,
+  deleteGroupById,
+};

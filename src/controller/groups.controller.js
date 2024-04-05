@@ -36,3 +36,14 @@ export const createGroups = (req, res) => {
 
   res.status(201).json(newGroup);
 };
+
+export const deleteGroup = (req, res) => {
+  const id = parseInt(req.params.id);
+
+  const deleted = groupsService.deleteGroupById(id);
+  if (!deleted) {
+    return res.status(404).json({ error: 'Group not found' });
+  }
+
+  res.status(200).json({ message: 'Group deleted successfully' });
+};
