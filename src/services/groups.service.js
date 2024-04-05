@@ -14,7 +14,7 @@ const getGroupByName = (name) => {
   return db.find((group) => group.name === name);
 };
 
-const createGroups = (name) => {
+const createGroup = (name) => {
   const existingGroup = getGroupByName(name);
   if (existingGroup) {
     return null;
@@ -28,4 +28,4 @@ const createGroups = (name) => {
   return newGroup;
 };
 
-export default { getGroups, getGroupById, createGroups, getGroupByName };
+export default { getGroups, getGroupById, createGroup, getGroupByName };
