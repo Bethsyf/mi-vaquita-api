@@ -14,7 +14,7 @@ const getGroupByName = (name) => {
   return db.find((group) => group.name === name);
 };
 
-const createGroup = (name) => {
+const createGroup = (name, color) => {
   const existingGroup = getGroupByName(name);
   if (existingGroup) {
     return null;
@@ -22,7 +22,7 @@ const createGroup = (name) => {
   const newGroup = {
     id: db.length + 1,
     name: name,
-    color: 'white',
+    color: color,
   };
   db.push(newGroup);
   return newGroup;

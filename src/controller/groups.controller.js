@@ -28,7 +28,7 @@ export const createGroups = (req, res) => {
       .json({ error: 'Name is required and must be less than 30 characters' });
   }
 
-  const newGroup = groupsService.createGroup(req.body.name);
+  const newGroup = groupsService.createGroup(req.body.name, req.body.color);
 
   if (newGroup === null) {
     return res.status(400).json({ error: 'Group already exists' });
