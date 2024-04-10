@@ -1,10 +1,22 @@
 import db from '../database/database.js';
 
-const getGroups = (req, res) => {
-  return db;
-};
-console.log(getGroups);
+const getGroups = (sort) => {
+  let groupDBSorted = [];
 
+  if (sort === 'asc') {
+    groupDBSorted = db.toSorted((a, b) => b.id - a.id);
+  } else {
+    groupDBSorted = db.toSorted((a, b) => a.id - b.id);
+  }
+
+  return groupDBSorted.map((group) => ({
+    name: group.name,
+    color: group.color,
+    id: group.id,
+  }));
+};
+console.log(getGroups('asc'));
+console.log(getGroups());
 const getGroupById = (id) => {
   const group = db.find((group) => group.id == id);
   return group;
