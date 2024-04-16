@@ -1,20 +1,19 @@
 import db from '../database/database.js';
 
-const getGroups = (sort) => {
+const getGroups = () => {
   let groupDBSorted = [];
 
-  if (sort === 'asc') {
-    groupDBSorted = db.sort((a, b) => b.id - a.id);
-  } else {
-    groupDBSorted = db.sort((a, b) => a.id - b.id);
-  }
+  groupDBSorted = db.toSorted((a, b) => b.id - a.id);
 
   return groupDBSorted.map((group) => ({
     name: group.name,
     color: group.color,
     id: group.id,
+    createdAt: group.createdAt,
   }));
 };
+
+console.log(getGroups());
 
 const getGroupById = (id) => {
   const group = db.find((group) => group.id == id);
@@ -34,6 +33,7 @@ const createGroup = (name, color) => {
     id: db.length + 1,
     name: name,
     color: color,
+    createdAt: new Date().toISOString(),
   };
   db.push(newGroup);
   return newGroup;

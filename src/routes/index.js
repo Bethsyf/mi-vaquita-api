@@ -1,16 +1,8 @@
 import express from 'express';
-import {
-  createGroups,
-  getGroups,
-  getGroup,
-  deleteGroup,
-} from '../controller/groups.controller.js';
+import productsRouter from './groups.router.js';
 
 const router = express.Router();
 
-router.get('/groups', getGroups);
-router.get('/groups/:id', getGroup);
-router.post('/groups', createGroups);
-router.delete('/groups/:id', deleteGroup);
+router.use('/groups', productsRouter);
 
 export default router;
