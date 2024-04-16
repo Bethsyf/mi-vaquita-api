@@ -3,7 +3,9 @@ import db from '../database/database.js';
 const getGroups = () => {
   let groupDBSorted = [];
 
-  groupDBSorted = db.toSorted((a, b) => b.id - a.id);
+  groupDBSorted = db.toSorted(
+    (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+  );
 
   return groupDBSorted.map((group) => ({
     name: group.name,
