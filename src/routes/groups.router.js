@@ -1,16 +1,16 @@
 import express from 'express';
-import {
-  createGroups,
-  getGroups,
-  getGroup,
-  deleteGroup,
-} from '../controller/groups.controller.js';
+import { GroupController } from '../controller/groups.controller.js';
 
-const router = express.Router();
+const GroupRouter = () => {
+  const groupController = GroupController();
+  const router = express.Router();
 
-router.get('/', getGroups);
-router.get('/:id', getGroup);
-router.post('/', createGroups);
-router.delete('/:id', deleteGroup);
+  router.get('/', groupController.getAll);
+  router.get('/:id', groupController.getById);
+  router.post('/', groupController.create);
+  router.delete('/:id', groupController.removeById);
 
-export default router;
+  return router;
+};
+
+export { GroupRouter };

@@ -1,6 +1,7 @@
 import express from 'express';
-import productsRouter from './groups.router.js';
+import { GroupRouter } from './groups.router.js';
 
+const productsRouter = GroupRouter();
 const router = express.Router();
 
 router.use('/groups', productsRouter);
