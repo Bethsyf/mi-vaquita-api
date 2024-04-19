@@ -1,6 +1,9 @@
-import db from '../database/database.js';
+import database from '../database/database.js';
+
+const db = database.groups;
+
 const GroupsServices = () => {
-  const getGroups = () => {
+  const getAll = () => {
     let groupDBSorted = [];
 
     groupDBSorted = db.toSorted(
@@ -8,40 +11,38 @@ const GroupsServices = () => {
     );
 
     return groupDBSorted.map((group) => ({
+      id: group.id,
       name: group.name,
       color: group.color,
-      id: group.id,
       createdAt: group.createdAt,
     }));
   };
 
-  console.log(getGroups());
-
-  const getGroupById = (id) => {
+  const getById = (id) => {
     const group = db.find((group) => group.id == id);
     return group;
   };
 
-  const getGroupByName = (name) => {
+  const getByName = (name) => {
     return db.find((group) => group.name === name);
   };
 
-  const createGroup = (name, color) => {
-    const existingGroup = getGroupByName(name);
+  const create = (name, color) => {
+    const existingGroup = getByName(name);
     if (existingGroup) {
       return null;
     }
     const newGroup = {
       id: db.length + 1,
-      name: name,
-      color: color,
+      name,
+      color,
       createdAt: new Date().toISOString(),
     };
     db.push(newGroup);
     return newGroup;
   };
 
-  const deleteGroupById = (id) => {
+  const removeById = (id) => {
     const index = db.findIndex((group) => group.id === id);
 
     if (index !== -1) {
@@ -52,11 +53,11 @@ const GroupsServices = () => {
   };
 
   return {
-    getGroups,
-    getGroupById,
-    createGroup,
-    getGroupByName,
-    deleteGroupById,
+    getAll,
+    getById,
+    create,
+    getByName,
+    removeById,
   };
 };
 

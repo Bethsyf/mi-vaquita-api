@@ -4,14 +4,14 @@ const GroupController = () => {
   const groupsService = GroupsServices();
 
   const getAll = (req, res) => {
-    const groups = groupsService.getGroups();
+    const groups = groupsService.getAll();
     res.json(groups);
   };
 
   const getById = (req, res) => {
     const id = req.params.id;
 
-    const group = groupsService.getGroupById(id);
+    const group = groupsService.getById(id);
     if (group === undefined) {
       res.status(404).send('Group not found');
     }
@@ -19,7 +19,7 @@ const GroupController = () => {
   };
 
   const create = (req, res) => {
-    const existingGroup = groupsService.getGroupByName(req.body.name);
+    const existingGroup = groupsService.getByName(req.body.name);
 
     if (existingGroup) {
       return res.status(400).json({ error: 'Group already exists' });
@@ -31,7 +31,7 @@ const GroupController = () => {
       });
     }
 
-    const newGroup = groupsService.createGroup(req.body.name, req.body.color);
+    const newGroup = groupsService.create(req.body.name, req.body.color);
 
     if (newGroup === null) {
       return res.status(400).json({ error: 'Group already exists' });
@@ -43,7 +43,7 @@ const GroupController = () => {
   const removeById = (req, res) => {
     const id = parseInt(req.params.id);
 
-    const deleted = groupsService.deleteGroupById(id);
+    const deleted = groupsService.removeById(id);
     if (!deleted) {
       return res.status(404).json({ error: 'Group not found' });
     }
