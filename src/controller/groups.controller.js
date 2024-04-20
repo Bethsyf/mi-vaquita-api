@@ -3,12 +3,12 @@ import { GroupsServices } from '../services/groups.service.js';
 const GroupController = () => {
   const groupsService = GroupsServices();
 
-  const getAll = (req, res) => {
+  const getAll = async (req, res) => {
     const groups = groupsService.getAll();
     res.json(groups);
   };
 
-  const getById = (req, res) => {
+  const getById = async (req, res) => {
     const id = req.params.id;
 
     const group = groupsService.getById(id);
@@ -18,7 +18,7 @@ const GroupController = () => {
     res.status(200).json(group);
   };
 
-  const create = (req, res) => {
+  const create = async (req, res) => {
     const existingGroup = groupsService.getByName(req.body.name);
 
     if (existingGroup) {
@@ -40,7 +40,7 @@ const GroupController = () => {
     res.status(201).json(newGroup);
   };
 
-  const removeById = (req, res) => {
+  const removeById = async (req, res) => {
     const id = parseInt(req.params.id);
 
     const deleted = groupsService.removeById(id);
