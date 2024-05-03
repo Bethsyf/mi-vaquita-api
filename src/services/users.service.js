@@ -19,8 +19,6 @@ const UsersServices = () => {
     }));
   };
 
-  console.log(getAll());
-
   const getById = (id) => {
     const user = db.find((user) => user.id == id);
     return user;
