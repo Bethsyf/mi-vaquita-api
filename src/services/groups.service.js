@@ -1,21 +1,15 @@
-import database from '../database/database.js';
+import { GroupModel } from '../models/group.model.js';
 
-const db = database.groups;
+const db = GroupModel();
 
 const GroupsServices = () => {
   const getAll = () => {
     let groupDBSorted = [];
 
-    groupDBSorted = db.toSorted(
-      (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-    );
+    groupDBSorted = db.getAll();
+    // .toSorted((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
-    return groupDBSorted.map((group) => ({
-      id: group.id,
-      name: group.name,
-      color: group.color,
-      createdAt: group.createdAt,
-    }));
+    return groupDBSorted;
   };
 
   const getById = (id) => {

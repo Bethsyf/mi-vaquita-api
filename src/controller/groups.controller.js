@@ -3,10 +3,19 @@ import { GroupsServices } from '../services/groups.service.js';
 const GroupController = () => {
   const groupsService = GroupsServices();
 
-  const getAll = async (req, res) => {
-    const groups = groupsService.getAll();
-    res.json(groups);
+  const getAll = async (_req, res) => {
+    console.log(2.1, '[Group] Controller Get All');
+    const groups = await groupsService.getAll();
+
+    return res.status(200).json({
+      groups,
+    });
   };
+
+  // const getAll = async (req, res) => {
+  //   const groups = await groupsService.getAll();
+  //   res.json(groups);
+  // };
 
   const getById = async (req, res) => {
     const id = req.params.id;
