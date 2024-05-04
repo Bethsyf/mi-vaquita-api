@@ -7,43 +7,44 @@ const GroupsServices = () => {
     let groupDBSorted = [];
 
     groupDBSorted = db.getAll();
+
     // .toSorted((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
     return groupDBSorted;
   };
 
-  const getById = (id) => {
-    const group = db.find((group) => group.id == id);
+  const getById = async (id) => {
+    const group = await db.getById(id);
     return group;
   };
 
-  const getByName = (name) => {
-    return db.find((group) => group.name === name);
+  const getByName = async (name) => {
+    return await db.findByName(name);
   };
 
-  const create = (name, color) => {
-    const existingGroup = getByName(name);
+  const create = async (name, color) => {
+    const existingGroup = await getByName(name);
     if (existingGroup) {
       return null;
     }
-    const newGroup = {
-      id: db.length + 1,
+    const newGroup = await db.create({
+      ownerUserId: 1,
       name,
       color,
-      createdAt: new Date().toISOString(),
-    };
-    db.push(newGroup);
+    });
+
     return newGroup;
   };
 
-  const removeById = (id) => {
-    const index = db.findIndex((group) => group.id === id);
+  const removeById = async (id) => {
+    return await db.delete(id);
+    // const index = db.findIndex((group) => group.id === id);
 
-    if (index !== -1) {
-      db.splice(index, 1);
-      return true;
-    }
-    return false;
+    // if (index !== -1) {
+    //   db.splice(index, 1);
+    //   return true;
+    // }
+    // return false;
   };
 
   return {

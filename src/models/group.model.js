@@ -8,7 +8,9 @@ const GroupModel = () => {
 
     const client = await connectionPool.connect();
 
-    const result = await client.query('SELECT * FROM GROUPS');
+    const result = await client.query(
+      'SELECT * FROM GROUPS ORDER BY createdat DESC'
+    );
     console.log(result.rows);
 
     client.release();
