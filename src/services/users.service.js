@@ -3,62 +3,46 @@ import { UserModel } from '../models/user.model.js';
 const db = UserModel();
 
 const UsersServices = () => {
-  const getAll = () => {
-    let userDBSorted = [];
-
-    userDBSorted = db.toSorted(
-      (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-    );
-
-    return userDBSorted.map((user) => ({
-      id: user.id,
-      name: user.name,
-      email: user.email,
-      password: user.password,
-      createdAt: user.createdAt,
-    }));
+  const getAll = async () => {
+    return await db.getAll();
   };
 
-  const getById = (id) => {
-    const user = db.find((user) => user.id == id);
-    return user;
+  const getById = async (id) => {
+    return await db.getById(id);
   };
 
-  const getByName = (name) => {
-    return db.find((user) => user.name === name);
+  const getByEmail = async (email) => {
+    return await db.getByEmail(email);
   };
 
-  const create = (name, email, password) => {
-    const existingUser = getByName(name);
+  const create = async (name, email, password) => {
+    const existingUser = await getByEmail(email);
     if (existingUser) {
       return null;
     }
-    const newUser = {
-      id: db.length + 1,
+    const newUser = await db.create({
+      ownerUserId: 1,
       name,
       email,
       password,
-      createdAt: new Date().toISOString(),
-    };
-    db.push(newUser);
+    });
     return newUser;
   };
 
-  const removeById = (id) => {
-    const index = db.findIndex((user) => user.id === id);
+  const update = async (id, updatedFields) => {
+    return await db.update(id, updatedFields);
+  };
 
-    if (index !== -1) {
-      db.splice(index, 1);
-      return true;
-    }
-    return false;
+  const removeById = async (id) => {
+    return await db.delete(id);
   };
 
   return {
     getAll,
     getById,
+    getByEmail,
     create,
-    getByName,
+    update,
     removeById,
   };
 };

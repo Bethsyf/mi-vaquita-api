@@ -27,7 +27,7 @@ const UsersController = () => {
 
   const create = async (req, res) => {
     try {
-      const existingUser = await usersService.getByName(req.body.name);
+      const existingUser = await usersService.getByEmail(req.body.email);
 
       if (existingUser) {
         return res.status(400).json({ error: 'User already exists' });
