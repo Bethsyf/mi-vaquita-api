@@ -3,19 +3,12 @@ import { GroupModel } from '../models/group.model.js';
 const db = GroupModel();
 
 const GroupsServices = () => {
-  const getAll = () => {
-    let groupDBSorted = [];
-
-    groupDBSorted = db.getAll();
-
-    // .toSorted((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-
-    return groupDBSorted;
+  const getAll = async () => {
+    return await db.getAll();
   };
 
   const getById = async (id) => {
-    const group = await db.getById(id);
-    return group;
+    return await db.getById(id);
   };
 
   const getByName = async (name) => {
@@ -32,25 +25,22 @@ const GroupsServices = () => {
       name,
       color,
     });
-
     return newGroup;
+  };
+
+  const update = async (id, updatedFields) => {
+    return await db.update(id, updatedFields);
   };
 
   const removeById = async (id) => {
     return await db.delete(id);
-    // const index = db.findIndex((group) => group.id === id);
-
-    // if (index !== -1) {
-    //   db.splice(index, 1);
-    //   return true;
-    // }
-    // return false;
   };
 
   return {
     getAll,
     getById,
     create,
+    update,
     getByName,
     removeById,
   };

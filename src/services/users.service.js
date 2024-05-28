@@ -1,6 +1,6 @@
-import database from '../database/database.js';
+import { UserModel } from '../models/user.model.js';
 
-const db = database.users;
+const db = UserModel();
 
 const UsersServices = () => {
   const getAll = () => {
@@ -63,4 +63,4 @@ const UsersServices = () => {
   };
 };
 
-export { UsersServices };
+export default UsersServices;

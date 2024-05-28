@@ -1,5 +1,5 @@
 import connectionPool from '../lib/connection.js';
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 
 const UserModel = () => {
   const create = async (user) => {
