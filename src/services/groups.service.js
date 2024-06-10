@@ -15,13 +15,17 @@ const GroupsServices = () => {
     return await db.findByName(name);
   };
 
-  const create = async (name, color) => {
+  const create = async (userId, name, color) => {
+    if (!userId) {
+      throw new Error('OwnerUserId cannot be null or undefined');
+    }
+
     const existingGroup = await getByName(name);
     if (existingGroup) {
       return null;
     }
     const newGroup = await db.create({
-      ownerUserId: 1,
+      ownerUserId: userId,
       name,
       color,
     });

@@ -1,5 +1,6 @@
 import { GroupsServices } from '../services/groups.service.js';
 import Joi from 'joi';
+import jwt from 'jsonwebtoken';
 
 const GroupController = () => {
   const groupsService = GroupsServices();
@@ -30,11 +31,23 @@ const GroupController = () => {
 
   const create = async (req, res) => {
     try {
+      if (!req.headers.authorization) {
+        return res
+          .status(401)
+          .json({ error: 'Authorization header is missing' });
+      }
+
+      const token = req.headers.authorization.split(' ')[1];
+      const decodedToken = jwt.decode(token);
+      const userId = decodedToken.id;
+
       await validateGroup(req.body);
       const newGroup = await groupsService.create(
+        userId,
         req.body.name,
         req.body.color
       );
+
       return res.status(201).json(newGroup);
     } catch (error) {
       return handleError(res, error, 'Error creating group');
@@ -68,7 +81,7 @@ const GroupController = () => {
 
   const validateGroup = async (group) => {
     const schema = Joi.object({
-      name: Joi.string().min(3).max(20).required(),
+      name: Joi.string().min(3).max(30).required(),
       color: Joi.string().required(),
     });
 
