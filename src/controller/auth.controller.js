@@ -1,29 +1,24 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import UsersService from '../services/users.service.js';
+import Joi from 'joi';
 
 const AuthController = () => {
   const usersService = UsersService();
 
   const login = async (req, res) => {
     try {
-      const { email, password } = req.body;
+      await validateLogin(req.body);
 
-      if (!email || !password) {
-        return res
-          .status(400)
-          .json({ message: 'Email and password are required' });
-      }
+      const { email, password } = req.body;
 
       const user = await usersService.getByEmail(email);
       if (!user) {
-        console.log('No user found with this email');
         return res.status(401).json({ message: 'Invalid credentials' });
       }
 
       const passwordMatch = await bcrypt.compare(password, user.password);
       if (!passwordMatch) {
-        console.log('Password does not match');
         return res.status(401).json({ message: 'Invalid credentials' });
       }
 
@@ -36,9 +31,22 @@ const AuthController = () => {
         .status(200)
         .json({ token, name: user.name, email: user.email });
     } catch (error) {
-      console.error('Error during login:', error.message);
-      return res.status(500).json({ message: 'Internal server error' });
+      return handleError(res, error, 'Error during login');
     }
+  };
+
+  const validateLogin = async (data) => {
+    const schema = Joi.object({
+      email: Joi.string().email().required(),
+      password: Joi.string().required(),
+    });
+
+    await schema.validateAsync(data);
+  };
+
+  const handleError = (res, error, message) => {
+    console.error(message + ':', error.message);
+    return res.status(500).json({ error: message + ': ' + error.message });
   };
 
   return {
