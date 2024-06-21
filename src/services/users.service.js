@@ -34,7 +34,7 @@ const UsersServices = () => {
   };
 
   const removeById = async (id) => {
-    return await db.delete(id);
+    return await db.removeById(id);
   };
 
   return {

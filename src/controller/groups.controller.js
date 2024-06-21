@@ -5,9 +5,40 @@ import jwt from 'jsonwebtoken';
 const GroupController = () => {
   const groupsService = GroupsServices();
 
-  const getAll = async (_req, res) => {
+  // const getAll = async (_req, res) => {
+  //   try {
+  //     const groups = await groupsService.getAll(userId);
+  //     return res.status(200).json({
+  //       message: 'Groups retrieved successfully',
+  //       groups,
+  //     });
+  //   } catch (error) {
+  //     return handleError(res, error, 'Error fetching groups');
+  //   }
+  // };
+
+  const getAll = async (req, res) => {
     try {
-      const groups = await groupsService.getAll();
+      // Verifica si existe el token de autorización en los headers
+      if (!req.headers.authorization) {
+        return res
+          .status(401)
+          .json({ error: 'Authorization header is missing' });
+      }
+
+      // Extrae el token y decodifica el JWT para obtener el userId
+      const token = req.headers.authorization.split(' ')[1];
+      const decodedToken = jwt.decode(token);
+
+      // Verifica si el token es válido y contiene el campo id
+      if (!decodedToken || !decodedToken.id) {
+        return res.status(401).json({ error: 'Invalid authorization token' });
+      }
+
+      const userId = decodedToken.id;
+
+      // Llama al servicio para obtener los grupos del usuario con userId
+      const groups = await groupsService.getAll(userId);
       return res.status(200).json({
         message: 'Groups retrieved successfully',
         groups,
@@ -50,10 +81,7 @@ const GroupController = () => {
 
       return res.status(201).json(newGroup);
     } catch (error) {
-      if (error.isJoi) {
-        return res.status(400).json({ error: error.message });
-      }
-      return handleError(res, error, 'Error creating user');
+      return handleError(res, error, 'Error creating group');
     }
   };
 
@@ -82,6 +110,43 @@ const GroupController = () => {
     }
   };
 
+  const addMember = async (req, res) => {
+    try {
+      if (!req.headers.authorization) {
+        return res
+          .status(401)
+          .json({ error: 'Authorization header is missing' });
+      }
+
+      const token = req.headers.authorization.split(' ')[1];
+      const decodedToken = jwt.decode(token);
+
+      if (!decodedToken || !decodedToken.id) {
+        return res.status(401).json({ error: 'Invalid authorization token' });
+      }
+
+      const userId = decodedToken.id;
+
+      const { groupId, userIdToAdd } = req.body;
+      if (!groupId) {
+        return res.status(400).json({ error: 'groupId is required' });
+      }
+
+      const success = await groupsService.addMember(groupId, userIdToAdd);
+
+      if (success) {
+        return res.status(200).json({ message: 'Member added successfully' });
+      } else {
+        return res
+          .status(400)
+          .json({ error: 'Failed to add member to the group' });
+      }
+    } catch (error) {
+      console.error('Error adding member to the group:', error);
+      return handleError(res, error, 'Error add member to group');
+    }
+  };
+
   const validateGroup = async (group) => {
     const schema = Joi.object({
       name: Joi.string().min(3).max(30).required(),
@@ -107,6 +172,7 @@ const GroupController = () => {
     create,
     update,
     removeById,
+    addMember,
   };
 };
 

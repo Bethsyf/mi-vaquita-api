@@ -40,11 +40,19 @@ const UserModel = () => {
     return result.rows[0];
   };
 
+  const removeById = async (id) => {
+    const client = await connectionPool.connect();
+    const result = await client.query('DELETE FROM Users WHERE ID = $1', [id]);
+    client.release();
+    return result.rowCount >= 1;
+  };
+
   return {
     getAll,
     create,
     getById,
     getByEmail,
+    removeById,
   };
 };
 

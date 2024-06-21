@@ -9,6 +9,7 @@ const GroupRouter = () => {
   router.get('/:id', groupController.getById);
   router.post('/', groupController.create);
   router.put('/:id', groupController.update);
+  router.post('/add', groupController.addMember);
   router.delete('/:id', groupController.removeById);
 
   return router;

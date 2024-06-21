@@ -9,6 +9,10 @@ const pathsToBypassAuthentication = [
     path: '/api/v1/users',
     method: 'POST',
   },
+  {
+    path: '/api/v1/users',
+    method: 'GET',
+  },
 ];
 
 const authenticateJWT = passport.authenticate('jwt', { session: false });
