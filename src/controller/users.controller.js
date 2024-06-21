@@ -1,4 +1,5 @@
 import UsersServices from '../services/users.service.js';
+import Joi from 'joi';
 
 const UsersController = () => {
   const usersService = UsersServices();
@@ -8,7 +9,7 @@ const UsersController = () => {
       const users = await usersService.getAll();
       res.status(200).json(users);
     } catch (error) {
-      res.status(500).json({ error: 'Error fetching users: ' + error.message });
+      return handleError(res, error, 'Error fetching users');
     }
   };
 
@@ -21,33 +22,24 @@ const UsersController = () => {
       }
       res.status(200).json(user);
     } catch (error) {
-      res.status(500).json({ error: 'Error fetching user: ' + error.message });
+      return handleError(res, error, 'Error fetching group');
     }
   };
 
   const create = async (req, res) => {
     try {
-      const existingUser = await usersService.getByEmail(req.body.email);
-
-      if (existingUser) {
-        return res.status(400).json({ error: 'User already exists' });
-      }
-
-      if (!req.body.name || req.body.name.length > 100) {
-        return res.status(400).json({
-          error: 'Name is required and must be less than 100 characters',
-        });
-      }
-
+      await validateUser(req.body);
       const newUser = await usersService.create(
         req.body.name,
         req.body.email,
         req.body.password
       );
-
       res.status(201).json(newUser);
     } catch (error) {
-      res.status(500).json({ error: 'Error creating user: ' + error.message });
+      if (error.isJoi) {
+        return res.status(400).json({ error: error.message });
+      }
+      return handleError(res, error, 'Error creating user');
     }
   };
 
@@ -62,10 +54,33 @@ const UsersController = () => {
 
       res.status(200).json({ message: 'User deleted successfully' });
     } catch (error) {
-      res.status(500).json({ error: 'Error deleting user: ' + error.message });
+      return handleError(res, error, 'Error deleting user');
     }
   };
 
+  const validateUser = async (user) => {
+    const schema = Joi.object({
+      name: Joi.string().min(3).max(30).required(),
+      email: Joi.string().email().required(),
+      password: Joi.string()
+        .required()
+        .pattern(
+          new RegExp('^[a-zA-Z0-9 !@#$%^&*()_+\\-=\\[\\]{};:\'"<>,./?]{8,30}$')
+        ),
+    });
+
+    await schema.validateAsync(user);
+
+    const existingUser = await usersService.getByEmail(user.email);
+    if (existingUser) {
+      throw new Error('User with the same email already exists');
+    }
+  };
+
+  const handleError = (res, error, message) => {
+    console.error(message + ':', error.message);
+    return res.status(500).json({ error: message + ': ' + error.message });
+  };
   return {
     getById,
     getAll,

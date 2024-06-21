@@ -50,7 +50,10 @@ const GroupController = () => {
 
       return res.status(201).json(newGroup);
     } catch (error) {
-      return handleError(res, error, 'Error creating group');
+      if (error.isJoi) {
+        return res.status(400).json({ error: error.message });
+      }
+      return handleError(res, error, 'Error creating user');
     }
   };
 
