@@ -1,29 +1,23 @@
 import connectionPool from '../lib/connection.js';
 
 const GroupModel = () => {
-  // const getAll = async () => {
-  //   const client = await connectionPool.connect();
-  //   const result = await client.query(
-  //     'SELECT * FROM GROUPS ORDER BY createdat DESC'
-  //   );
-  //   client.release();
-  //   return result.rows;
-  // };
   const getAll = async (userId) => {
     const client = await connectionPool.connect();
     try {
-      const query = `
-        SELECT G.id, G.name, G.color
-        FROM Groups G
-        WHERE G.ownerUserId = $1 
-        
-        UNION 
-        
-        SELECT G.id, G.name, G.color
-        FROM Groups G
-        JOIN GroupMembers GM ON G.id = GM.groupId
-        WHERE GM.userId = $1
-      `;
+      const query = `SELECT id, name, color, createdat
+        FROM (
+            SELECT G.id, G.name, G.color, G.createdat
+            FROM Groups G
+            WHERE G.ownerUserId = $1
+            
+            UNION 
+            
+            SELECT G.id, G.name, G.color, G.createdat
+            FROM Groups G
+            JOIN GroupMembers GM ON G.id = GM.groupId
+            WHERE GM.userId = $1
+        ) AS combined_results
+        ORDER BY createdat DESC`;
       const result = await client.query(query, [userId]);
       return result.rows;
     } finally {
