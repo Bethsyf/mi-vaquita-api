@@ -4,20 +4,22 @@ const GroupModel = () => {
   const getAll = async (userId) => {
     const client = await connectionPool.connect();
     try {
-      const query = `SELECT id, name, color, createdat
+      const query = `
+        SELECT id, name, color, createdat
         FROM (
-            SELECT G.id, G.name, G.color, G.createdat
-            FROM Groups G
-            WHERE G.ownerUserId = $1
-            
-            UNION 
-            
-            SELECT G.id, G.name, G.color, G.createdat
-            FROM Groups G
-            JOIN GroupMembers GM ON G.id = GM.groupId
-            WHERE GM.userId = $1
+          SELECT id, name, color, createdat
+          FROM Groups
+          WHERE ownerUserId = $1
+          
+          UNION
+          
+          SELECT G.id, G.name, G.color, G.createdat
+          FROM Groups G
+          JOIN GroupMembers GM ON G.id = GM.groupId
+          WHERE GM.userId = $1
         ) AS combined_results
-        ORDER BY createdat DESC`;
+        ORDER BY createdat DESC, id DESC`;
+
       const result = await client.query(query, [userId]);
       return result.rows;
     } finally {
@@ -46,12 +48,15 @@ const GroupModel = () => {
 
   const create = async (entity) => {
     const client = await connectionPool.connect();
-    const result = await client.query(
-      'INSERT INTO GROUPS (owneruserid, name, color, CREATEDAT) VALUES ($1, $2, $3, NOW()) RETURNING *',
-      [entity.ownerUserId, entity.name, entity.color]
-    );
-    client.release();
-    return result.rows[0];
+    try {
+      const result = await client.query(
+        'INSERT INTO GROUPS (owneruserid, name, color, createdat) VALUES ($1, $2, $3, NOW()) RETURNING *',
+        [entity.ownerUserId, entity.name, entity.color]
+      );
+      return result.rows[0];
+    } finally {
+      client.release();
+    }
   };
 
   const update = async (id, updatedFields) => {
