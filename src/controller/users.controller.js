@@ -6,7 +6,12 @@ const UsersController = () => {
 
   const getAll = async (req, res) => {
     try {
-      const users = await usersService.getAll();
+      const groupId = req.query.groupId;
+      if (!groupId) {
+        return res.status(400).json({ error: 'groupId is required' });
+      }
+
+      const users = await usersService.getAll(groupId);
       res.status(200).json(users);
     } catch (error) {
       return handleError(res, error, 'Error fetching users');

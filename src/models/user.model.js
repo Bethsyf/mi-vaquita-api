@@ -2,11 +2,25 @@ import connectionPool from '../lib/connection.js';
 import bcrypt from 'bcryptjs';
 
 const UserModel = () => {
-  const getAll = async () => {
+  const getAll = async (groupId) => {
     const client = await connectionPool.connect();
-    const result = await client.query('SELECT * FROM USERS');
-    client.release();
-    return result.rows;
+    try {
+      const result = await client.query(
+        `
+        SELECT * FROM Users WHERE id NOT IN (
+          SELECT userId FROM GroupMembers
+          WHERE groupId = $1
+          UNION
+          SELECT ownerUserId FROM Groups
+          WHERE id = $1
+        );
+      `,
+        [groupId]
+      );
+      return result.rows;
+    } finally {
+      client.release();
+    }
   };
 
   const create = async (user) => {

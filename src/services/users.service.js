@@ -3,8 +3,8 @@ import { UserModel } from '../models/user.model.js';
 const db = UserModel();
 
 const UsersServices = () => {
-  const getAll = async () => {
-    return await db.getAll();
+  const getAll = async (groupId) => {
+    return await db.getAll(groupId);
   };
 
   const getById = async (id) => {

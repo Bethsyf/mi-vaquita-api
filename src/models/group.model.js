@@ -80,27 +80,23 @@ const GroupModel = () => {
     return result.rowCount >= 1;
   };
 
-  const addMember = async (groupId, userId) => {
+  const addMember = async (groupId, userEmails) => {
     const client = await connectionPool.connect();
     try {
       await client.query('BEGIN');
 
-      // Primero, verifica si el usuario ya es miembro del grupo
-      const checkMemberQuery =
-        'SELECT COUNT(*) FROM GROUPMEMBERS WHERE groupId = $1 AND userId = $2';
-      const checkMemberResult = await client.query(checkMemberQuery, [
-        groupId,
-        userId,
-      ]);
+      for (const email of userEmails) {
+        const userResult = await client.query(
+          'SELECT id FROM USERS WHERE email = $1',
+          [email]
+        );
+        if (userResult.rows.length === 0) {
+          throw new Error(`Usuario con email ${email} no encontrado`);
+        }
+        const userId = userResult.rows[0].id;
 
-      if (checkMemberResult.rows[0].count > 0) {
-        throw new Error('User is already a member of the group');
+        await addMemberToGroup(groupId, userId);
       }
-
-      // Si el usuario no es miembro, añádelo a la tabla GROUP_MEMBERS
-      const addMemberQuery =
-        'INSERT INTO GROUPMEMBERS (groupId, userId) VALUES ($1, $2)';
-      await client.query(addMemberQuery, [groupId, userId]);
 
       await client.query('COMMIT');
 
@@ -108,6 +104,18 @@ const GroupModel = () => {
     } catch (error) {
       await client.query('ROLLBACK');
       throw error;
+    } finally {
+      client.release();
+    }
+  };
+
+  const addMemberToGroup = async (groupId, userId) => {
+    const client = await connectionPool.connect();
+    try {
+      await client.query(
+        'INSERT INTO GroupMembers (groupId, userId) VALUES ($1, $2)',
+        [groupId, userId]
+      );
     } finally {
       client.release();
     }

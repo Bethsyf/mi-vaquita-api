@@ -127,23 +127,26 @@ const GroupController = () => {
 
       const userId = decodedToken.id;
 
-      const { groupId, userIdToAdd } = req.body;
+      const { groupId, userEmails } = req.body;
       if (!groupId) {
         return res.status(400).json({ error: 'groupId is required' });
       }
+      if (!userEmails || !Array.isArray(userEmails)) {
+        return res.status(400).json({ error: 'userEmails must be an array' });
+      }
 
-      const success = await groupsService.addMember(groupId, userIdToAdd);
+      const success = await groupsService.addMember(groupId, userEmails);
 
       if (success) {
-        return res.status(200).json({ message: 'Member added successfully' });
+        return res.status(200).json({ message: 'Members added successfully' });
       } else {
         return res
           .status(400)
-          .json({ error: 'Failed to add member to the group' });
+          .json({ error: 'Failed to add members to the group' });
       }
     } catch (error) {
-      console.error('Error adding member to the group:', error);
-      return handleError(res, error, 'Error add member to group');
+      console.error('Error adding members to the group:', error);
+      return handleError(res, error, 'Error adding members to group');
     }
   };
 
