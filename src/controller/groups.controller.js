@@ -5,32 +5,17 @@ import jwt from 'jsonwebtoken';
 const GroupController = () => {
   const groupsService = GroupsServices();
 
-  // const getAll = async (_req, res) => {
-  //   try {
-  //     const groups = await groupsService.getAll(userId);
-  //     return res.status(200).json({
-  //       message: 'Groups retrieved successfully',
-  //       groups,
-  //     });
-  //   } catch (error) {
-  //     return handleError(res, error, 'Error fetching groups');
-  //   }
-  // };
-
   const getAll = async (req, res) => {
     try {
-      // Verifica si existe el token de autorización en los headers
       if (!req.headers.authorization) {
         return res
           .status(401)
           .json({ error: 'Authorization header is missing' });
       }
 
-      // Extrae el token y decodifica el JWT para obtener el userId
       const token = req.headers.authorization.split(' ')[1];
       const decodedToken = jwt.decode(token);
 
-      // Verifica si el token es válido y contiene el campo id
       if (!decodedToken || !decodedToken.id) {
         return res.status(401).json({ error: 'Invalid authorization token' });
       }
@@ -57,6 +42,39 @@ const GroupController = () => {
       return res.status(200).json(group);
     } catch (error) {
       return handleError(res, error, 'Error fetching group');
+    }
+  };
+
+  const getCountParticipants = async (req, res) => {
+    try {
+      if (!req.headers.authorization) {
+        return res
+          .status(401)
+          .json({ error: 'Authorization header is missing' });
+      }
+
+      const token = req.headers.authorization.split(' ')[1];
+      const decodedToken = jwt.decode(token);
+
+      if (!decodedToken || !decodedToken.id) {
+        return res.status(401).json({ error: 'Invalid authorization token' });
+      }
+
+      const userId = decodedToken.id;
+
+      const groupId = req.params.id;
+
+      if (!groupId) {
+        return res
+          .status(400)
+          .json({ error: 'groupId is required in query parameters' });
+      }
+
+      const count = await groupsService.getCountParticipants(groupId);
+
+      res.status(200).json({ count });
+    } catch (error) {
+      return handleError(res, error, 'Error fetching participants count');
     }
   };
 
@@ -172,6 +190,7 @@ const GroupController = () => {
   return {
     getById,
     getAll,
+    getCountParticipants,
     create,
     update,
     removeById,

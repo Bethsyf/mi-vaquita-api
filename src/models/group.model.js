@@ -36,6 +36,25 @@ const GroupModel = () => {
     return result.rows[0];
   };
 
+  const getCountParticipants = async (id) => {
+    const client = await connectionPool.connect();
+    try {
+      const result = await client.query(
+        `
+        SELECT COUNT(*) AS count FROM Users WHERE id IN (
+          SELECT ownerUserId FROM Groups WHERE id = $1
+          UNION
+          SELECT userId FROM GroupMembers WHERE groupId = $1
+        );
+        `,
+        [id]
+      );
+      return result.rows[0].count;
+    } finally {
+      client.release();
+    }
+  };
+
   const findByName = async (value) => {
     const client = await connectionPool.connect();
     const result = await client.query(
@@ -145,6 +164,7 @@ const GroupModel = () => {
   return {
     getById,
     getAll,
+    getCountParticipants,
     create,
     update,
     removeById,
