@@ -14,7 +14,7 @@ const ExpenseModel = () => {
           expense.expenseName,
           parsedAmount,
           expense.paidByUserId,
-          JSON.stringify(expense.participants),
+          expense.participants,
         ]
       );
 

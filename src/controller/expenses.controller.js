@@ -22,17 +22,11 @@ const ExpenseController = () => {
 
       const userId = decodedToken.id;
 
-      // Validar los datos de la solicitud usando validateExpense
       await validateExpense(req.body);
 
-      // Extraer los datos del cuerpo de la solicitud
       const { groupId, expenseName, amount, paidByUserId, participants } =
         req.body;
 
-      // Calcular participantsCount
-      const participantsCount = participants.length;
-
-      // Crear el objeto de gasto con los datos necesarios
       const expenseData = {
         groupId,
         userId,
@@ -40,16 +34,10 @@ const ExpenseController = () => {
         amount,
         paidByUserId,
         participants,
-        participantsCount, // Añadir participantsCount al objeto de gasto
       };
 
-      // Llamar al servicio para crear el gasto, pasando los datos completos
       const expense = await expensesService.create(expenseData);
 
-      // Añadir participantsCount a la respuesta del gasto
-      expense.participantsCount = participantsCount;
-
-      // Devolver la respuesta con el gasto creado y un mensaje
       return res
         .status(201)
         .json({ message: 'Expense created successfully', expense });

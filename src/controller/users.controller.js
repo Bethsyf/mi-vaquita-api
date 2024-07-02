@@ -30,6 +30,19 @@ const UsersController = () => {
       return handleError(res, error, 'Error fetching group');
     }
   };
+  const getByEmail = async (req, res) => {
+    try {
+      const email = req.params.email;
+
+      const user = await usersService.getByEmail(email);
+      if (!user) {
+        return res.status(404).send('User not found');
+      }
+      res.status(200).json(user);
+    } catch (error) {
+      return handleError(res, error, 'Error fetching group');
+    }
+  };
 
   const create = async (req, res) => {
     try {
@@ -89,6 +102,7 @@ const UsersController = () => {
   return {
     getById,
     getAll,
+    getByEmail,
     create,
     removeById,
   };

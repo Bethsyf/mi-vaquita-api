@@ -41,7 +41,9 @@ const GroupModel = () => {
     try {
       const result = await client.query(
         `
-        SELECT COUNT(*) AS count FROM Users WHERE id IN (
+        SELECT COUNT(*) AS count, array_agg(u.email) AS emails
+        FROM Users u
+        WHERE u.id IN (
           SELECT ownerUserId FROM Groups WHERE id = $1
           UNION
           SELECT userId FROM GroupMembers WHERE groupId = $1
@@ -49,7 +51,11 @@ const GroupModel = () => {
         `,
         [id]
       );
-      return result.rows[0].count;
+
+      return {
+        count: result.rows[0].count,
+        emails: result.rows[0].emails || [],
+      };
     } finally {
       client.release();
     }
@@ -71,7 +77,6 @@ const GroupModel = () => {
         [id]
       );
 
-      // Transformar los resultados para agregar participantsCount
       const expenses = result.rows.map((row) => {
         const participants = row.participants || [];
         const participantsCount = participants.length;

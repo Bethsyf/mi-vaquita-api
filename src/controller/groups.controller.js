@@ -67,9 +67,9 @@ const GroupController = () => {
           .json({ error: 'groupId is required in query parameters' });
       }
 
-      const count = await groupsService.getCountParticipants(groupId);
+      const participants = await groupsService.getCountParticipants(groupId);
 
-      res.status(200).json({ count });
+      res.status(200).json({ participants });
     } catch (error) {
       return handleError(res, error, 'Error fetching participants count');
     }

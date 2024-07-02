@@ -7,6 +7,7 @@ const UserRouter = () => {
 
   router.get('/', userController.getAll);
   router.get('/:id', userController.getById);
+  router.get('/email/:email', userController.getByEmail);
   router.post('/', userController.create);
   router.delete('/:id', userController.removeById);
 
