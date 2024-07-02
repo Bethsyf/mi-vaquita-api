@@ -55,6 +55,42 @@ const GroupModel = () => {
     }
   };
 
+  const getExpensesById = async (id) => {
+    const client = await connectionPool.connect();
+    try {
+      const result = await client.query(
+        `SELECT
+          e.id,
+          e.expensename AS expenseName,
+          u.name AS paidBy,
+          e.amount AS amount,
+          e.participants AS participants
+        FROM expenses e
+        JOIN users u ON e.paidbyuserid = u.id
+        WHERE e.groupid = $1`,
+        [id]
+      );
+
+      // Transformar los resultados para agregar participantsCount
+      const expenses = result.rows.map((row) => {
+        const participants = row.participants || [];
+        const participantsCount = participants.length;
+        return {
+          id: row.id,
+          expenseName: row.expensename,
+          paidBy: row.paidby,
+          amount: parseFloat(row.amount),
+          participants,
+          participantsCount,
+        };
+      });
+
+      return expenses;
+    } finally {
+      client.release();
+    }
+  };
+
   const findByName = async (value) => {
     const client = await connectionPool.connect();
     const result = await client.query(
@@ -145,7 +181,6 @@ const GroupModel = () => {
     try {
       await client.query('BEGIN');
 
-      // Elimina al usuario de la tabla GROUP_MEMBERS
       const removeMemberQuery =
         'DELETE FROM GROUPMEMBERS WHERE group_id = $1 AND user_id = $2';
       const result = await client.query(removeMemberQuery, [groupId, userId]);
@@ -165,6 +200,7 @@ const GroupModel = () => {
     getById,
     getAll,
     getCountParticipants,
+    getExpensesById,
     create,
     update,
     removeById,

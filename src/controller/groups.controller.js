@@ -22,7 +22,6 @@ const GroupController = () => {
 
       const userId = decodedToken.id;
 
-      // Llama al servicio para obtener los grupos del usuario con userId
       const groups = await groupsService.getAll(userId);
       return res.status(200).json({
         message: 'Groups retrieved successfully',
@@ -60,8 +59,6 @@ const GroupController = () => {
         return res.status(401).json({ error: 'Invalid authorization token' });
       }
 
-      const userId = decodedToken.id;
-
       const groupId = req.params.id;
 
       if (!groupId) {
@@ -75,6 +72,22 @@ const GroupController = () => {
       res.status(200).json({ count });
     } catch (error) {
       return handleError(res, error, 'Error fetching participants count');
+    }
+  };
+
+  const getExpensesById = async (req, res) => {
+    try {
+      const groupId = req.params.id;
+      const expenses = await groupsService.getExpensesById(groupId);
+      if (!expenses) {
+        return res.status(404).json({ message: 'Expenses not found' });
+      }
+      return res.status(200).json({
+        message: 'Expenses retrieved successfully',
+        expenses,
+      });
+    } catch (error) {
+      return handleError(res, error, 'Error fetching group expenses');
     }
   };
 
@@ -191,6 +204,7 @@ const GroupController = () => {
     getById,
     getAll,
     getCountParticipants,
+    getExpensesById,
     create,
     update,
     removeById,

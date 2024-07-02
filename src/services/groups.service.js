@@ -14,12 +14,16 @@ const GroupsServices = () => {
     return await db.getById(id);
   };
 
+  const getByName = async (name) => {
+    return await db.findByName(name);
+  };
+
   const getCountParticipants = async (id) => {
     return await db.getCountParticipants(id);
   };
 
-  const getByName = async (name) => {
-    return await db.findByName(name);
+  const getExpensesById = async (id) => {
+    return await db.getExpensesById(id);
   };
 
   const create = async (userId, name, color) => {
@@ -58,6 +62,7 @@ const GroupsServices = () => {
     getAll,
     getById,
     getCountParticipants,
+    getExpensesById,
     create,
     update,
     getByName,

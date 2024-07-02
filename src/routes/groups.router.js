@@ -8,6 +8,7 @@ const GroupRouter = () => {
   router.get('/', groupController.getAll);
   router.get('/:id', groupController.getById);
   router.get('/participants/:id', groupController.getCountParticipants);
+  router.get('/expenses/:id', groupController.getExpensesById);
   router.post('/', groupController.create);
   router.put('/:id', groupController.update);
   router.post('/add', groupController.addMember);
