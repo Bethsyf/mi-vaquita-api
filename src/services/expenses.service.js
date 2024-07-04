@@ -11,9 +11,14 @@ const ExpensesServices = () => {
     return await db.getById(id);
   };
 
+  const deleteById = async (id) => {
+    return await db.deleteById(id);
+  };
+
   return {
     create,
     getById,
+    deleteById,
   };
 };
 

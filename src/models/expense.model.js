@@ -14,7 +14,7 @@ const ExpenseModel = () => {
           expense.expenseName,
           parsedAmount,
           expense.paidByUserId,
-          expense.participants,
+          JSON.stringify(expense.participants),
         ]
       );
 
@@ -37,9 +37,23 @@ const ExpenseModel = () => {
     }
   };
 
+  const deleteById = async (id) => {
+    const client = await connectionPool.connect();
+    try {
+      const result = await client.query(
+        'DELETE FROM Expenses WHERE id = $1 RETURNING *',
+        [id]
+      );
+      return result.rows[0];
+    } finally {
+      client.release();
+    }
+  };
+
   return {
     create,
     getById,
+    deleteById,
   };
 };
 

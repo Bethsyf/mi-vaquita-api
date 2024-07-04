@@ -41,7 +41,7 @@ const GroupModel = () => {
     try {
       const result = await client.query(
         `
-        SELECT COUNT(*) AS count, array_agg(u.email) AS emails
+        SELECT COUNT(*) AS count, array_agg(u.email) AS emails, array_agg(u.id) AS ids
         FROM Users u
         WHERE u.id IN (
           SELECT ownerUserId FROM Groups WHERE id = $1
@@ -55,6 +55,7 @@ const GroupModel = () => {
       return {
         count: result.rows[0].count,
         emails: result.rows[0].emails || [],
+        ids: result.rows[0].ids || [],
       };
     } finally {
       client.release();

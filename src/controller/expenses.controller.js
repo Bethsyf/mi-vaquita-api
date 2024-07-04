@@ -59,6 +59,19 @@ const ExpenseController = () => {
     }
   };
 
+  const deleteById = async (req, res) => {
+    try {
+      const id = req.params.id;
+      const expense = await expensesService.deleteById(id);
+      if (!expense) {
+        return res.status(404).json({ error: 'Expense not found' });
+      }
+      return res.status(200).json({ message: 'Expense deleted successfully' });
+    } catch (error) {
+      return handleError(res, error, 'Error deleting expense');
+    }
+  };
+
   const validateExpense = async (expense) => {
     const schema = Joi.object({
       groupId: Joi.number().integer().required(),
@@ -69,7 +82,6 @@ const ExpenseController = () => {
         .items(
           Joi.object({
             userId: Joi.number().integer().required(),
-            participated: Joi.boolean().required(),
           })
         )
         .required(),
@@ -86,6 +98,7 @@ const ExpenseController = () => {
   return {
     create,
     getById,
+    deleteById,
   };
 };
 
