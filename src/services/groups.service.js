@@ -3,9 +3,6 @@ import { GroupModel } from '../models/group.model.js';
 const db = GroupModel();
 
 const GroupsServices = () => {
-  // const getAll = async () => {
-  //   return await db.getAll();
-  // };
   const getAll = async (UserId) => {
     return await db.getAll(UserId);
   };

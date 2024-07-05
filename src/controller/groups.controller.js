@@ -23,11 +23,62 @@ const GroupController = () => {
       const userId = decodedToken.id;
 
       const groups = await groupsService.getAll(userId);
+
+      const groupsWithTotalAmountDue = await Promise.all(
+        groups.map(async (group) => {
+          const expenses = await groupsService.getExpensesById(group.id);
+
+          if (!expenses) {
+            return {
+              ...group,
+              totalAmountDue: 0,
+              totalAmountMessage: 'No expenses',
+            };
+          }
+
+          let totalMeDeben = 0;
+          let totalDebo = 0;
+
+          expenses.forEach((expense) => {
+            const { amount, paidByUserId, participants } = expense;
+
+            const isParticipant = participants.some(
+              (participant) => participant.userId === userId
+            );
+
+            if (paidByUserId === userId) {
+              const totalParticipants = participants.length;
+              const portionAmount = amount / totalParticipants;
+              totalMeDeben += amount - portionAmount;
+            } else if (isParticipant) {
+              const totalParticipants = participants.length;
+              const portionAmount = amount / totalParticipants;
+              totalDebo += portionAmount;
+            }
+          });
+
+          const totalAmountDue = totalMeDeben - totalDebo;
+          const totalAmountMessage =
+            totalAmountDue > 0
+              ? 'Me deben'
+              : totalAmountDue < 0
+              ? 'Debo'
+              : 'Balanceado';
+
+          return {
+            ...group,
+            totalAmountDue: Math.abs(totalAmountDue),
+            totalAmountMessage,
+          };
+        })
+      );
+
       return res.status(200).json({
         message: 'Groups retrieved successfully',
-        groups,
+        groups: groupsWithTotalAmountDue,
       });
     } catch (error) {
+      console.error('Error fetching groups:', error);
       return handleError(res, error, 'Error fetching groups');
     }
   };
