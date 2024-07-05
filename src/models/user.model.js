@@ -2,7 +2,17 @@ import connectionPool from '../lib/connection.js';
 import bcrypt from 'bcryptjs';
 
 const UserModel = () => {
-  const getAll = async (groupId) => {
+  const getAll = async () => {
+    const client = await connectionPool.connect();
+    try {
+      const result = await client.query('SELECT * FROM Users');
+      return result.rows;
+    } finally {
+      client.release();
+    }
+  };
+
+  const getAllByGroupId = async (groupId) => {
     const client = await connectionPool.connect();
     try {
       const result = await client.query(
@@ -63,6 +73,7 @@ const UserModel = () => {
 
   return {
     getAll,
+    getAllByGroupId,
     create,
     getById,
     getByEmail,

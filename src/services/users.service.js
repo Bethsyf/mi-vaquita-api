@@ -3,8 +3,12 @@ import { UserModel } from '../models/user.model.js';
 const db = UserModel();
 
 const UsersServices = () => {
-  const getAll = async (groupId) => {
-    return await db.getAll(groupId);
+  const getAll = async () => {
+    return await db.getAll();
+  };
+
+  const getAllByGroupId = async (groupId) => {
+    return await db.getAllByGroupId(groupId);
   };
 
   const getById = async (id) => {
@@ -39,6 +43,7 @@ const UsersServices = () => {
 
   return {
     getAll,
+    getAllByGroupId,
     getById,
     getByEmail,
     create,

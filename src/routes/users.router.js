@@ -5,7 +5,8 @@ const UserRouter = () => {
   const userController = UsersController();
   const router = express.Router();
 
-  router.get('/', userController.getAll);
+  router.get('/all', userController.getAll);
+  router.get('/', userController.getAllByGroupId);
   router.get('/:id', userController.getById);
   router.get('/email/:email', userController.getByEmail);
   router.post('/', userController.create);

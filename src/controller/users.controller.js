@@ -6,12 +6,21 @@ const UsersController = () => {
 
   const getAll = async (req, res) => {
     try {
+      const users = await usersService.getAll();
+      res.status(200).json(users);
+    } catch (error) {
+      return handleError(res, error, 'Error fetching users');
+    }
+  };
+
+  const getAllByGroupId = async (req, res) => {
+    try {
       const groupId = req.query.groupId;
       if (!groupId) {
         return res.status(400).json({ error: 'groupId is required' });
       }
 
-      const users = await usersService.getAll(groupId);
+      const users = await usersService.getAllByGroupId(groupId);
       res.status(200).json(users);
     } catch (error) {
       return handleError(res, error, 'Error fetching users');
@@ -102,6 +111,7 @@ const UsersController = () => {
   return {
     getById,
     getAll,
+    getAllByGroupId,
     getByEmail,
     create,
     removeById,
