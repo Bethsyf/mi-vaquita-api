@@ -88,6 +88,16 @@ const ExpenseController = () => {
     });
 
     await schema.validateAsync(expense);
+
+    const existingExpense = await expensesService.getByNameAndGroupId(
+      expense.expenseName,
+      expense.groupId
+    );
+    if (existingExpense) {
+      throw new Error(
+        'Expense with the same name already exists in this group'
+      );
+    }
   };
 
   const handleError = (res, error, message) => {

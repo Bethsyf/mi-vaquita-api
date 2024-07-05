@@ -10,6 +10,9 @@ const ExpensesServices = () => {
   const getById = async (id) => {
     return await db.getById(id);
   };
+  const getByNameAndGroupId = async (name, groupId) => {
+    return await db.findByName(name, groupId);
+  };
 
   const deleteById = async (id) => {
     return await db.deleteById(id);
@@ -18,6 +21,7 @@ const ExpensesServices = () => {
   return {
     create,
     getById,
+    getByNameAndGroupId,
     deleteById,
   };
 };

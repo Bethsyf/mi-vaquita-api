@@ -70,6 +70,7 @@ const GroupModel = () => {
           e.id,
           e.expensename AS expenseName,
           u.name AS paidBy,
+          e.paidbyuserid AS paidByUserId,
           e.amount AS amount,
           e.participants AS participants
         FROM expenses e
@@ -85,6 +86,7 @@ const GroupModel = () => {
           id: row.id,
           expenseName: row.expensename,
           paidBy: row.paidby,
+          paidByUserId: row.paidbyuserid,
           amount: parseFloat(row.amount),
           participants,
           participantsCount,

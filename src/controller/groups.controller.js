@@ -82,11 +82,54 @@ const GroupController = () => {
       if (!expenses) {
         return res.status(404).json({ message: 'Expenses not found' });
       }
+
+      if (!req.headers.authorization) {
+        return res
+          .status(401)
+          .json({ error: 'Authorization header is missing' });
+      }
+      const token = req.headers.authorization.split(' ')[1];
+      const decodedToken = jwt.decode(token);
+      const userId = decodedToken.id;
+
+      const expensesWithCalculatedAmountDue = expenses.map((expense) => {
+        const { amount, paidByUserId, participants } = expense;
+
+        const isParticipant = participants.some(
+          (participant) => participant.userId === userId
+        );
+
+        if (paidByUserId === userId) {
+          const totalParticipants = participants.length;
+          const portionAmount = amount / totalParticipants;
+          const amountDue = {
+            value: amount - portionAmount,
+            message: 'Me deben',
+          };
+          return { ...expense, amountDue };
+        } else if (isParticipant) {
+          const totalParticipants = participants.length;
+          const portionAmount = amount / totalParticipants;
+          const amountDue = {
+            value: portionAmount,
+            message: 'Debo',
+          };
+          return { ...expense, amountDue };
+        } else {
+          const amountDue = {
+            value: 0,
+            message: 'No participé',
+          };
+          return { ...expense, amountDue };
+        }
+      });
+
       return res.status(200).json({
         message: 'Expenses retrieved successfully',
-        expenses,
+        expenses: expensesWithCalculatedAmountDue,
       });
     } catch (error) {
+      console.error('Error fetching group expenses:', error);
       return handleError(res, error, 'Error fetching group expenses');
     }
   };
