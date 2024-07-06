@@ -7,6 +7,7 @@ const ExpenseRouter = () => {
 
   router.post('/', expenseController.create);
   router.get('/:id', expenseController.getById);
+  router.get('/user/:userId', expenseController.getByUserId);
   router.delete('/:id', expenseController.deleteById);
 
   return router;

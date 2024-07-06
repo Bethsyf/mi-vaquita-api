@@ -59,6 +59,21 @@ const ExpenseController = () => {
     }
   };
 
+  const getByUserId = async (req, res) => {
+    try {
+      const userId = req.params.userId;
+      const expenses = await expensesService.getByUserId(userId);
+      if (!expenses || expenses.length === 0) {
+        return res
+          .status(404)
+          .json({ error: 'No expenses found for this user' });
+      }
+      return res.status(200).json(expenses);
+    } catch (error) {
+      return handleError(res, error, 'Error fetching expenses');
+    }
+  };
+
   const deleteById = async (req, res) => {
     try {
       const id = req.params.id;
@@ -108,6 +123,7 @@ const ExpenseController = () => {
   return {
     create,
     getById,
+    getByUserId,
     deleteById,
   };
 };

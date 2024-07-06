@@ -37,6 +37,19 @@ const ExpenseModel = () => {
     }
   };
 
+  const getByUserId = async (userId) => {
+    const client = await connectionPool.connect();
+    try {
+      const result = await client.query(
+        'SELECT e.*, g.name AS groupname FROM Expenses e JOIN Groups g ON e.groupId = g.id WHERE e.userId = $1',
+        [userId]
+      );
+      return result.rows;
+    } finally {
+      client.release();
+    }
+  };
+
   const findByName = async (expenseName, groupId) => {
     const client = await connectionPool.connect();
     try {
@@ -66,6 +79,7 @@ const ExpenseModel = () => {
   return {
     create,
     getById,
+    getByUserId,
     findByName,
     deleteById,
   };
