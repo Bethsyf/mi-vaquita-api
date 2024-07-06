@@ -29,7 +29,7 @@ const AuthController = () => {
 
       return res
         .status(200)
-        .json({ token, name: user.name, email: user.email });
+        .json({ token, userId: user.id, name: user.name, email: user.email });
     } catch (error) {
       return handleError(res, error, 'Error during login');
     }

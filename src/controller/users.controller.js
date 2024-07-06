@@ -104,6 +104,20 @@ const UsersController = () => {
     }
   };
 
+  const updateById = async (req, res) => {
+    try {
+      const { id } = req.params;
+      const userData = req.body;
+      const updatedUser = await usersService.updateById(id, userData);
+      if (!updatedUser) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+      res.status(200).json(updatedUser);
+    } catch (error) {
+      handleError(res, error, 'Error updating user');
+    }
+  };
+
   const handleError = (res, error, message) => {
     console.error(message + ':', error.message);
     return res.status(500).json({ error: message + ': ' + error.message });
@@ -115,6 +129,7 @@ const UsersController = () => {
     getByEmail,
     create,
     removeById,
+    updateById,
   };
 };
 

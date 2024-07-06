@@ -71,6 +71,44 @@ const UserModel = () => {
     return result.rowCount >= 1;
   };
 
+  const updateById = async (id, user) => {
+    const client = await connectionPool.connect();
+    try {
+      const { name, email, password } = user;
+      let updatedFields = [];
+      let values = [];
+      let index = 1;
+
+      if (name) {
+        updatedFields.push(`name = $${index}`);
+        values.push(name);
+        index++;
+      }
+      if (email) {
+        updatedFields.push(`email = $${index}`);
+        values.push(email);
+        index++;
+      }
+      if (password) {
+        const hashedPassword = await bcrypt.hash(password, 10);
+        updatedFields.push(`password = $${index}`);
+        values.push(hashedPassword);
+        index++;
+      }
+
+      values.push(id);
+      const result = await client.query(
+        `UPDATE Users SET ${updatedFields.join(
+          ', '
+        )} WHERE id = $${index} RETURNING *`,
+        values
+      );
+      return result.rows[0];
+    } finally {
+      client.release();
+    }
+  };
+
   return {
     getAll,
     getAllByGroupId,
@@ -78,6 +116,7 @@ const UserModel = () => {
     getById,
     getByEmail,
     removeById,
+    updateById,
   };
 };
 

@@ -41,6 +41,10 @@ const UsersServices = () => {
     return await db.removeById(id);
   };
 
+  const updateById = async (id, userData) => {
+    return await db.updateById(id, userData);
+  };
+
   return {
     getAll,
     getAllByGroupId,
@@ -49,6 +53,7 @@ const UsersServices = () => {
     create,
     update,
     removeById,
+    updateById,
   };
 };
 
